@@ -23,7 +23,7 @@ final class BridgeConfigTests: XCTestCase {
         XCTAssertEqual(config.triggerHoldDelay, 0.25)
         XCTAssertEqual(config.optionWarmupTapDuration, 0.05)
         XCTAssertEqual(config.optionWarmupToHoldDelay, 0.22)
-        XCTAssertEqual(config.tapDuration, 0.05)
+        XCTAssertEqual(config.tapDuration, 0.15)
         XCTAssertEqual(config.triggerHotkey, BridgeHotkey(keys: [.rightCommand]))
         XCTAssertEqual(config.voiceHotkey, BridgeHotkey(keys: [.leftOption]))
     }
@@ -179,7 +179,7 @@ final class BridgeConfigTests: XCTestCase {
 
         let config = try BridgeConfig.load(from: data)
 
-        XCTAssertEqual(config.tapDuration, 0.05)
+        XCTAssertEqual(config.tapDuration, 0.15)
     }
 
     func testTapDurationOverriddenFromJSON() throws {

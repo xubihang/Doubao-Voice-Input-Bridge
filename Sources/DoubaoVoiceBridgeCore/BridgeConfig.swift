@@ -140,7 +140,7 @@ public struct BridgeConfig: Equatable, Sendable {
         triggerHoldDelay: 0.25,
         optionWarmupTapDuration: 0.05,
         optionWarmupToHoldDelay: 0.22,
-        tapDuration: 0.05,
+        tapDuration: 0.15,
         triggerHotkey: BridgeHotkey(keys: [.rightCommand]),
         voiceHotkey: BridgeHotkey(keys: [.leftOption])
     )
@@ -260,7 +260,7 @@ public struct BridgeConfig: Equatable, Sendable {
           "triggerHoldDelay": 0.25,
           "optionWarmupTapDuration": 0.05,
           "optionWarmupToHoldDelay": 0.22,
-          "tapDuration": 0.05,
+          "tapDuration": 0.15,
           "triggerHotkey": "RightCommand",
           "voiceHotkey": "LeftOption"
         }

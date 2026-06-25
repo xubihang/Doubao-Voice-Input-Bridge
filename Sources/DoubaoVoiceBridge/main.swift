@@ -501,11 +501,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func tapVoiceHotkeyIfCurrent(_ currentSession: UUID) {
         guard sessionID == currentSession, triggerHotkeyDown else {
+            logger.log("tapVoiceHotkeyIfCurrent skipped: session mismatch or trigger not down")
             return
         }
-        logger.log("voice hotkey single tap for doubao免按模式")
+        logger.log("voice hotkey single tap for doubao免按模式, duration=\(config.tapDuration)")
         voiceHotkeySender.tap(duration: config.tapDuration) { [weak self] in
             guard let self, self.sessionID == currentSession else { return }
+            self.logger.log("tap completion callback, sending tapVoiceTriggerSent")
             self.machine.handle(.tapVoiceTriggerSent)
         }
     }
@@ -1131,6 +1133,7 @@ private final class HotkeySender {
     // MARK: - 单次点按: 完整事件序列 (flagsChanged + keyDown -> keyUp + flagsChanged)
 
     func tap(duration: TimeInterval, completion: (() -> Void)? = nil) {
+        NSLog("[HotkeySender] tap started: duration=%.3f", duration)
         for key in hotkey.keys where key.isModifier {
             postModifier(key: key, down: true)
         }
@@ -1140,12 +1143,14 @@ private final class HotkeySender {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + duration) { [weak self] in
             guard let self else { return }
+            NSLog("[HotkeySender] tap releasing keys")
             for key in self.hotkey.keys.reversed() where !key.isModifier {
                 self.postKey(key: key, down: false)
             }
             for key in self.hotkey.keys.reversed() where key.isModifier {
                 self.postModifier(key: key, down: false)
             }
+            NSLog("[HotkeySender] tap completed")
             completion?()
         }
     }

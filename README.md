@@ -79,7 +79,7 @@ DoubaoVoiceBridge 是一个本地 macOS 菜单栏工具。它把一个全局快�
   "triggerHoldDelay": 0.25,
   "optionWarmupTapDuration": 0.05,
   "optionWarmupToHoldDelay": 0.22,
-  "tapDuration": 0.05,
+  "tapDuration": 0.15,
   "triggerHotkey": "RightCommand",
   "voiceHotkey": "LeftOption"
 }
@@ -174,7 +174,7 @@ LaunchAgent 的标准输出和错误日志在：
 
 - 重写 HotkeySender 事件模拟：修饰键按下/释放时补发 `flagsChanged` 事件，`keyUp` 时 flags 反映剩余修饰键状态而非清零，与真实硬件行为一致
 - 新增 `tap(duration:completion:)` 方法封装完整点按序列，替代手动拼 `down()` + `asyncAfter` + `up()`
-- 新增 `tapDuration` 配置项，控制免按模式下点按持续时间，默认 `0.05` 秒
+- 新增 `tapDuration` 配置项，控制免按模式下点按持续时间，默认 `0.15` 秒
 - 修复豆包 0.9.2+ 偶尔触发"触发方式调整"弹窗的问题
 - app bundle 版本提升到 `1.0.6`
 
