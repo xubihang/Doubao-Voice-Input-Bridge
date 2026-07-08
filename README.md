@@ -99,7 +99,7 @@ DoubaoVoiceBridge 是一个本地 macOS 菜单栏工具。它把一个全局快�
 - `optionWarmupToHoldDelay`：预热结束到正式按住之间的等待时间，默认 `0.22`
 - `tapDuration`：单次点按语音快捷键的持续时间，默认 `0.05`；豆包 0.9.2 及以后免按模式下使用，模拟真实按键的按下-释放时长
 - `triggerHotkey`：用户按下的触发键，默认 `RightCommand`，支持 `RightCommand+Space` 这类加号组合
-- `voiceHotkey`：应用发给豆包的语音快捷键，默认 `LeftOption`，同样支持加号组合；豆包 `0.9.2` 及以后会单次点按，旧版会预热后长按
+- `voiceHotkey`：应用发给豆包的语音快捷键，默认 `LeftOption`，同样支持加号组合；不能复用 `triggerHotkey` 的物理键，冲突时回落到默认值；豆包 `0.9.2` 及以后会单次点按，旧版会预热后长按
 
 热键名称大小写不敏感，空格可省略。固定名称包括 `LeftShift`、`RightShift`、`Shift`、`LeftControl`、`RightControl`、`Control`、`LeftOption`、`RightOption`、`Option`、`LeftCommand`、`RightCommand`、`Command`、`Tab`、`Space`。字母、数字和常见符号按键可以直接写基础输入，例如数字键写 `1`，不写 Shift 后的 `!`。
 
@@ -169,6 +169,14 @@ LaunchAgent 的标准输出和错误日志在：
 ```text
 ~/Library/Logs/DoubaoVoiceBridge/app.log
 ```
+
+## Release 1.0.7
+
+- 支持豆包中常见的双修饰键语音快捷键，例如 `RightCommand+RightShift`
+- 新增 HotkeyEventPlan，将组合键统一生成为按下/释放事件计划，避免入口层手写特殊分支
+- 修复右侧修饰键缺少 side-specific flags 导致豆包无法识别 `RightCommand+RightShift` 的问题
+- 阻断 `triggerHotkey` 与 `voiceHotkey` 复用同一物理键，冲突时回落到默认语音键
+- app bundle 版本提升到 `1.0.7`
 
 ## Release 1.0.6
 

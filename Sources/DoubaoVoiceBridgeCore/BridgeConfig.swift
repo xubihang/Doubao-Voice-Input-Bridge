@@ -1,7 +1,7 @@
 /**
  * [INPUT]: 依赖 Foundation 的 JSONDecoder/Data
- * [OUTPUT]: 对外提供 BridgeKey、BridgeHotkey、BridgeConfig、PartialBridgeConfig 类型与 JSON 加载/默认配置模板
- * [POS]: DoubaoVoiceBridgeCore 的配置层，被 main.swift 入口消费；定义所有可调时序参数与快捷键解析
+ * [OUTPUT]: 对外提供 BridgeKey、BridgeHotkey、BridgeConfig、PartialBridgeConfig 类型与 JSON 加载/默认配置模板，保证触发键与语音键不复用同一物理键
+ * [POS]: DoubaoVoiceBridgeCore 的配置层，被 main.swift 入口消费；定义所有可调时序参数、快捷键解析与配置不变量
  * [PROTOCOL]: 变更时更新此头部，然后检查 codex.md
  */
 import Foundation
@@ -34,6 +34,45 @@ public enum BridgeKey: Equatable, Hashable, Sendable {
             return false
         }
     }
+
+    func overlaps(_ other: BridgeKey) -> Bool {
+        semanticKeys.contains { other.semanticKeys.contains($0) }
+    }
+
+    private var semanticKeys: Set<String> {
+        switch self {
+        case .leftShift:
+            return ["leftShift"]
+        case .rightShift:
+            return ["rightShift"]
+        case .shift:
+            return ["leftShift", "rightShift"]
+        case .leftControl:
+            return ["leftControl"]
+        case .rightControl:
+            return ["rightControl"]
+        case .control:
+            return ["leftControl", "rightControl"]
+        case .leftOption:
+            return ["leftOption"]
+        case .rightOption:
+            return ["rightOption"]
+        case .option:
+            return ["leftOption", "rightOption"]
+        case .leftCommand:
+            return ["leftCommand"]
+        case .rightCommand:
+            return ["rightCommand"]
+        case .command:
+            return ["leftCommand", "rightCommand"]
+        case .tab:
+            return ["tab"]
+        case .space:
+            return ["space"]
+        case .character(let value):
+            return ["character:\(value)"]
+        }
+    }
 }
 
 public struct BridgeHotkey: Equatable, Sendable {
@@ -45,6 +84,12 @@ public struct BridgeHotkey: Equatable, Sendable {
 
     public func contains(_ key: BridgeKey) -> Bool {
         keys.contains(key)
+    }
+
+    public func overlaps(_ other: BridgeHotkey) -> Bool {
+        keys.contains { key in
+            other.keys.contains { key.overlaps($0) }
+        }
     }
 
     public static func parse(_ value: String) -> BridgeHotkey? {
@@ -161,6 +206,9 @@ public struct BridgeConfig: Equatable, Sendable {
         config.tapDuration = partial.tapDuration ?? config.tapDuration
         config.triggerHotkey = partial.triggerHotkey.flatMap(BridgeHotkey.parse) ?? config.triggerHotkey
         config.voiceHotkey = partial.voiceHotkey.flatMap(BridgeHotkey.parse) ?? config.voiceHotkey
+        if config.voiceHotkey.overlaps(config.triggerHotkey) {
+            config.voiceHotkey = BridgeConfig.default.voiceHotkey
+        }
         return config
     }
 
